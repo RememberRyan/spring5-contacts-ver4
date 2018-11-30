@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Thymeleaf app</title>
 </head>
 <body>
+<h1>Contact list</h1>
 
+<a th:href="@{/createContact}">Create</a>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Last name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>*</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="contact: ${contacts}">
+        <td th:text="${contact.name}"></td>
+        <td th:text="${contact.lastName}"></td>
+        <td th:text="${contact.description}"></td>
+        <td th:switch="${contact.status.name()}">
+            <span th:case="'ACTIVE'" th:text="Active"></span>
+            <span th:case="'DISABLED'" th:text="Disabled"></span>
+            <span th:case="'DELETED'" th:text="Deleted"></span>
+        </td>
+        <td>
+            <a th:href="@{/view(id=${contact.id})}">View</a>
+        </td>
+    </tr>
+
+    </tbody>
+</table>
 </body>
 </html>

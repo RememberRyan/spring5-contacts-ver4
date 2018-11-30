@@ -20,7 +20,6 @@ public class Phone {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Column(name = "contactId")
     private Integer contactId;
     private int countryCode;
     private int phoneNumber;
