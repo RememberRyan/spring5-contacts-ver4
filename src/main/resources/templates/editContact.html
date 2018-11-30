@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit contact</title>
+</head>
+<body>
+<h1>Edit contact form</h1>
+<form action="#" th:action="@{/editContact/{id}(id=${contact.id})}" method="post" th:object="${contact}">
+    <input type="hidden" th:field="*{id}">
+    <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}" />
+    </ul>
+    <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></span>
+    <label th:for="name">Name</label> <input type="text" th:field="*{name}">
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Here will be error message</span>
+    <br/>
+    <input type="submit" value="Update">
+</form>
+</body>
+</html>

@@ -21,7 +21,8 @@ public class ContactService {
 
     @Transactional
     public Contact save(Contact contact) {
-        return contactRepository.save(contact);
+        contactRepository.save(contact);
+        return get(contact.getId());
     }
 
     public Contact get(Integer id) {
