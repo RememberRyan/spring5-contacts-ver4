@@ -1,13 +1,18 @@
 package ee.sdacademy.thymleaf.contacts.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,18 +29,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Contact {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Length(min = 3, max = 50)
     private String name;
-    @Length(min = 3, max = 50)
-    @LastNameCustomConstraint(expectEndsWith = "ov")
     private String lastName;
     @CreationTimestamp
     private Date creationTime;
     @Enumerated(EnumType.STRING)
-    private ContactStatus status = ContactStatus.ACTIVE;
-    @Max(300)
+    private ContactStatus status;
     private String description;
+    @OneToMany(cascade={CascadeType.ALL},
+            fetch= FetchType.LAZY,
+            orphanRemoval=true,
+            mappedBy="contact", targetEntity=Email.class)
+    private List<Email> emails = new ArrayList<>();
+
 
 }

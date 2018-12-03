@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:if="${newContact}">Create contact</title>
+    <title th:unless="${newContact}">Edit contact</title>
+    <script>
+        function addNewEmail() {
+
+        }
+    </script>
+</head>
+<body>
+<h1 th:if="${newContact}">Create contact</h1>
+<h1 th:unless="${newContact}">Edit contact</h1>
+
+<form th:action="@{/createContact}" method="post" th:object="${contact}" >
+    <label>Name</label> <input type="text" th:field="*{name}">
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    <br>
+    <label>Last name</label> <input type="text" th:field="*{lastName}">
+    <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></span>
+    <br>
+    <table></table>
+    <input type="submit" value="Create new user"/>
+
+    <h2>Emails</h2>
+    <table>
+        <thead>
+        <tr>
+            <td>Type</td>
+            <td>Email</td>
+            <td>Description</td>
+            <td>
+                *
+            </td>
+        </tr>
+        </thead>
+        <tbody id="emailsRows">
+        <tr th:each="email, row: *{emails}">
+            <td>
+                <select th:field="*{emails[__${row.index}__].type}">
+                    <option value="HOME">Home</option>
+                    <option value="WORK">Work</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" th:field="*{emails[__${row.index}__].email}"/>
+                <span th:if="${#fields.hasErrors('emails['+__${row.index}__+'].email')}" th:errors="*{emails[__${row.index}__].email}"></span>
+            </td>
+            <td>
+              <textarea th:field="*{emails[__${row.index}__].description}">
+                  some text
+              </textarea>
+            </td>
+            <td>
+                <button type="button" onclick="this.parentElement.parentElement.remove()">Remove</button>
+            </td>
+</tr>
+</tbody>
+</table>
+
+
+</form>
+</body>
+</html>

@@ -7,23 +7,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ee.sdacademy.thymleaf.contacts.domain.Contact;
+import ee.sdacademy.thymleaf.contacts.model.ContactModel;
 import ee.sdacademy.thymleaf.contacts.services.ContactService;
+import ee.sdacademy.thymleaf.contacts.validators.ContactValidator;
 
 @Controller
 public class IndexPageController {
-
-
-
     @Autowired
     private ContactService contactService;
+    @Autowired
+    private ContactValidator contactValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(contactValidator);
+    }
 
     @GetMapping("/")
     public String mainPage(Model model) {
@@ -41,9 +48,10 @@ public class IndexPageController {
     @GetMapping("/createContact")
     public String createContactPage(Model model) {
         model.addAttribute("newContact", true);
-        Contact o = new Contact();
+        ContactModel o = new ContactModel();
+        o.getEmails().add(new ContactModel.Email());
         model.addAttribute("contact", o);
-        return "createEditContact";
+        return "createContact";
     }
 
     @GetMapping("/editContact/{id}")
@@ -55,7 +63,7 @@ public class IndexPageController {
     @PostMapping("/editContact/{id}")
     public String editContactPage(
             @PathVariable("id") Integer id,
-            @Valid Contact contact,
+            @Valid ContactModel contact,
             BindingResult bindingResult,
             Model model) {
 
@@ -70,12 +78,12 @@ public class IndexPageController {
     }
 
     @PostMapping("/createContact")
-    public String createContact(@Valid @ModelAttribute Contact contact, BindingResult bindingResult, Model model) {
+    public String createContact(@Valid @ModelAttribute("contact") ContactModel contact, BindingResult result, Model model) {
         model.addAttribute("newContact", true);
-        if (bindingResult.hasErrors()) {
-            return "createEditContact";
+        if (result.hasErrors()) {
+            return "createContact";
         }
-        Contact createContact = contactService.save(contact);
+        ContactModel createContact = contactService.save(contact);
         return "redirect:/view?id=" + createContact.getId();
 
     }
