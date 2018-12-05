@@ -6,16 +6,121 @@
 </head>
 <body>
 <h1>Edit contact form</h1>
-<form action="#" th:action="@{/editContact/{id}(id=${contact.id})}" method="post" th:object="${contact}">
+<form action="#" th:action="@{/editContact/{id}(id=${contact.id})}" method="post" th:object="${contact}" id="editForm">
     <input type="hidden" th:field="*{id}">
     <ul>
-        <li th:each="err : ${#fields.errors('*')}" th:text="${err}" />
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"/>
     </ul>
     <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></span>
-    <label th:for="name">Name</label> <input type="text" th:field="*{name}">
+    <br/>
+
+    <label th:for="name" th:value="#{contact.name}">Name</label>
+    <input type="text" th:field="*{name}">
     <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Here will be error message</span>
     <br/>
+
+    <label th:for="lastName" th:text="#{contact.lastname}">Last name</label>
+    <input type="text" th:field="*{lastName}">
+    <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Here will be an error message</span>
+    <br>
+
+    <label th:for="description" th:text="#{contact.description}"></label>
+    <textarea type="text" th:field="*{description}">desc</textarea>
+    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description errors</span>
+    <br/>
+
+    <label th:for="status" th:text="#{contact.status}">Status</label>
+    <select th:field="*{status}">
+        <option th:each="eStatus: ${statuses}"
+                th:value="${eStatus}"
+                th:text="#{'contact.status.value.'+ ${eStatus.name()}}">
+            Some status
+        </option>
+    </select>
+
+
+    <h2>Emails</h2>
+    <table>
+        <thead>
+        <tr>
+            <td>Type</td>
+            <td>Email</td>
+            <td>Description</td>
+            <td>
+                *
+            </td>
+        </tr>
+        </thead>
+        <tbody id="emailsRows">
+        <tr th:each="email, row: *{emails}">
+            <td>
+                <input type="hidden" th:field="*{emails[__${row.index}__].id}"/>
+                <select th:field="*{emails[__${row.index}__].type}">
+                    <option value="HOME">Home</option>
+                    <option value="WORK">Work</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" th:field="*{emails[__${row.index}__].email}"/>
+                <span th:if="${#fields.hasErrors('emails['+__${row.index}__+'].email')}" th:errors="*{emails[__${row.index}__].email}"></span>
+            </td>
+            <td>
+              <textarea th:field="*{emails[__${row.index}__].description}">
+                  some text
+              </textarea>
+            </td>
+            <td>
+                <button type="button" onclick="this.parentElement.parentElement.remove()">Remove</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
     <input type="submit" value="Update">
+
 </form>
+
+<h2>Add new email</h2>
+<form th:object="${newEmail}" th:action="@{/editContact/{contactId}/addEmail(contactId=${contact.id})}" method="post">
+    <table>
+        <thead>
+        <tr>
+            <td>Type</td>
+            <td>Email</td>
+            <td>Description</td>
+            <td>
+                *
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <select th:field="*{type}">
+                    <option th:each="detailTypes: ${detailsTypes}" th:value="${detailTypes.name()}" th:text="${detailTypes.name()}">Type</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" th:field="*{email}"/>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            </td>
+            <td>
+              <textarea th:field="*{description}">
+                  some text
+              </textarea>
+            </td>
+            <td>
+                <input type="submit" value="Add email">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</form>
+
+<a th:href="@{/}">GO BACK</a>
 </body>
 </html>

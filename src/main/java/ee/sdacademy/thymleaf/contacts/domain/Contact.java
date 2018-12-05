@@ -40,7 +40,6 @@ public class Contact {
     private String description;
     @OneToMany(cascade={CascadeType.ALL},
             fetch= FetchType.LAZY,
-            orphanRemoval=true,
             mappedBy="contact", targetEntity=Email.class)
     private List<Email> emails = new ArrayList<>();
 

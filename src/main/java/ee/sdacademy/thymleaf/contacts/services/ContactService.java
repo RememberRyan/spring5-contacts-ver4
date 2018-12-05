@@ -4,13 +4,14 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class ContactService {
     @Autowired
     private ContactRepository contactRepository;
 
+    @Transactional
     public ContactModel save(ContactModel contact) {
         Contact save = contactRepository.saveAndFlush(mapToDomain(contact));
         return get(save.getId());
@@ -59,10 +61,10 @@ public class ContactService {
     }
 
     private List<Email> mapModelEmailsToDomain(Contact contact, final List<ContactModel.Email> emails) {
-        return emails == null ? Collections.emptyList() : emails.stream().map(email -> mapModelEmailToDomain(contact, email)).collect(toList());
+        return emails == null ? Collections.emptyList() : emails.stream().map(email -> mapNewModelEmailToDomain(contact, email)).collect(toList());
     }
 
-    private Email mapModelEmailToDomain(Contact contact, final ContactModel.Email model) {
+    private Email mapNewModelEmailToDomain(Contact contact, final ContactModel.Email model) {
         Email email = new Email();
         return mapModelEmailToToDomainObject(contact, model, email);
     }
@@ -111,8 +113,9 @@ public class ContactService {
         return model;
     }
 
-    public List<ContactModel> findAll() {
-        return contactRepository.findAll().stream().map(this::mapToShortModel).collect(toList());
+    public Page<ContactModel> find(final Integer page) {
+        Page<Contact> queryPage = contactRepository.findAll(PageRequest.of(page - 1, 3));
+        return queryPage.map(this::mapToShortModel);
     }
 
     private ContactModel mapToShortModel(final Contact contact) {
@@ -128,5 +131,11 @@ public class ContactService {
 
     public List<Phone> findPhoneNumbers(Integer contactId) {
         return phoneRepository.findByContactId(contactId);
+    }
+
+    @Transactional
+    public void addNewEmail(final Integer contactId, final ContactModel.Email email) {
+        Contact contact = contactRepository.getOne(contactId);
+        contact.getEmails().add(mapNewModelEmailToDomain(contact, email));
     }
 }
