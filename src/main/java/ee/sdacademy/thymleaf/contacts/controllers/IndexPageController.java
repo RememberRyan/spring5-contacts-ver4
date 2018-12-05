@@ -89,7 +89,7 @@ public class IndexPageController {
     }
 
     @PostMapping("/createContact")
-    public String createContact(@Valid ContactModel contact, BindingResult result, Model model) {
+    public String createContact(@Valid @ModelAttribute("contact") ContactModel contact, BindingResult result, Model model) {
         model.addAttribute("newContact", true);
         if (result.hasErrors()) {
             return "createContact";
