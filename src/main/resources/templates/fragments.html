@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<span th:fragment="header">
+
+    <h1>My cool application</h1>
+</span>
+<div th:fragment="pagination (totalPages, currentPage)">
+    <table>
+        <tr th:remove="all-but-first">
+            <td th:each="pageId: ${#numbers.sequence( 1, __${totalPages}__, 1)}">
+                <span th:if="${pageId == currentPage}" th:text="${pageId}">1</span>
+                <a th:unless="${pageId == currentPage}" th:href="@{/(page=${pageId})}" href="#" th:text="${pageId}">1</a>
+            </td>
+            <td><a href="#">2</a></td>
+            <td><a href="#">3</a></td>
+            <td><a href="#">4</a></td>
+        </tr>
+    </table>
+
+</div>
+
+
+</body>
+</html>

@@ -13,9 +13,20 @@
     </style>
 </head>
 <body>
-<h1 th:text="#{contact.least.title}">Contact list</h1>
+<div style="display: none" th:fragment="imageOk">
+</div>
+<span style="display: none" th:fragment="subheader">
+    <div th:include=":: imageOk"></div>
+    <h3>My cool application sub head</h3>
+</span>
+
+<div th:replace="fragments.html :: header"></div>
+<div th:include=":: subheader"></div>
+
+<h2 th:text="#{contact.least.title}">Contact list</h2>
 
 <a th:href="@{/createContact}">Create</a>
+<div th:include="fragments.html :: pagination (totalPages = ${contacts.totalPages}, currentPage= ${currentPage})"></div>
 <table>
     <thead>
     <tr>
@@ -35,6 +46,7 @@
         <td>
             <a th:href="@{/view(id=${contact.id})}">View</a>
             <a th:href="@{/editContact/{id}(id=${contact.id})}">Edit</a>
+            <div th:include=":: imageOk"></div>
         </td>
     </tr>
     <tr>
@@ -70,15 +82,7 @@
 
     </tbody>
 </table>
-<table>
-    <tr th:remove="all-but-first">
-        <td th:each="pageId: ${#numbers.sequence( 1, __${contacts.totalPages}__, 1)}">
-            <a th:href="@{/(page=${pageId})}" href="#" th:text="${pageId}">1</a>
-        </td>
-        <td><a href="#">2</a></td>
-        <td><a href="#">3</a></td>
-        <td><a href="#">4</a></td>
-    </tr>
-</table>
+<div th:include="fragments.html :: pagination (totalPages = ${contacts.totalPages}, currentPage = ${currentPage})"></div>
+<div th:include=":: imageOk"></div>
 </body>
 </html>

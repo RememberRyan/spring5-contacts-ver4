@@ -1,5 +1,6 @@
 package ee.sdacademy.thymleaf.contacts.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,11 +15,13 @@ import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "contact")
 public class Email {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

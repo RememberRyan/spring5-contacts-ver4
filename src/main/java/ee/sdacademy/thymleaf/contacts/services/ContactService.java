@@ -45,7 +45,7 @@ public class ContactService {
         contact.setLastName(model.getLastName());
         contact.setStatus(model.getStatus());
         contact.setDescription(model.getDescription());
-        contact.setEmails(mapModelExistingEmailsToDomain(contact, model.getEmails()));
+        mapModelExistingEmailsToDomain(contact, model.getEmails());
 
         return contact;
     }
@@ -77,15 +77,31 @@ public class ContactService {
         return email;
     }
 
-    private List<Email> mapModelExistingEmailsToDomain(final Contact contact, final List<ContactModel.Email> modelEmails) {
-        if (modelEmails == null || modelEmails.isEmpty()) {
-            return Collections.emptyList();
+    private void mapModelExistingEmailsToDomain(final Contact contact, List<ContactModel.Email> modelEmails) {
+        if (modelEmails == null) {
+            return;
         }
 
-        Map<Integer, Email> currentEmails = contact.getEmails().stream().collect(toMap(Email::getId, Function.identity()));
-        return modelEmails.stream().filter(e -> !e.isDelete())
-                .map(email -> mapModelEmailToToDomainObject(contact, email, currentEmails.computeIfAbsent(email.getId(), (id) -> new Email())))
-                .collect(toList());
+
+        Map<Integer, ContactModel.Email> modelEmailsMap = modelEmails.stream().filter(e -> e.getId() != null).
+                collect(toMap(ContactModel.Email::getId, Function.identity()));
+
+        Iterator<Email> emailIterator = contact.getEmails().iterator();
+
+        while (emailIterator.hasNext()) {
+            Email email = emailIterator.next();
+            ContactModel.Email modelEmail = modelEmailsMap.get(email.getId());
+
+            if (modelEmail == null || modelEmail.isDelete()) {
+                emailIterator.remove();
+                continue;
+            }
+            mapModelEmailToToDomainObject(contact, modelEmail, email);
+        }
+        modelEmails.stream().filter(email -> email.getId() == null).map(email -> mapNewModelEmailToDomain(contact, email)).forEach(email -> {
+            contact.getEmails().add(email);
+        });
+
     }
 
     @Transactional(readOnly = true)

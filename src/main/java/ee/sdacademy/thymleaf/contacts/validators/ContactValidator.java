@@ -7,6 +7,7 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -19,12 +20,20 @@ public class ContactValidator implements Validator {
 
     @Override
     public boolean supports(final Class<?> clazz) {
-        return ContactModel.class.equals(clazz);
+        return true;
     }
 
     @Override
     public void validate(final Object target, final Errors errors) {
+        if (!(target instanceof ContactModel)) {
+            return;
+        }
+
+
         ContactModel input = (ContactModel) target;
+        if (input.getId() == null && !input.getEmails().isEmpty()) {
+
+        }
 
        /* ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "NotEmpty.userForm.name");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");

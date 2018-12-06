@@ -31,10 +31,19 @@ public class IndexPageController {
     @Autowired
     private ContactValidator contactValidator;
 
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(contactValidator);
+    }
 
+    @GetMapping("/header")
+    public String showMeHeader() {
+        return "fragments :: header";
+    }
     @GetMapping("/")
     public String mainPage(@RequestParam(value = "page", defaultValue = "1") Integer page, Model model) {
         model.addAttribute("contacts", contactService.find(page));
+        model.addAttribute("currentPage", page);
         return "index";
     }
 
@@ -57,9 +66,9 @@ public class IndexPageController {
     @GetMapping("/editContact/{id}")
     public String editContactPage(@PathVariable("id") Integer id, @ModelAttribute("newEmail") ContactModel.Email email, Model model, HttpSession session) {
         model.addAttribute("contact", contactService.get(id));
-        model.addAttribute("newEmail", email);
+        //model.addAttribute("newEmail", email);
         if (session.getAttribute("binding") != null) {
-            model.addAttribute("org.springframework.validation.BindingResult.newEmail", session.getAttribute("binding"));
+            model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "newEmail", session.getAttribute("binding"));
             session.removeAttribute("binding");
         }
         return "editContact";
@@ -68,7 +77,7 @@ public class IndexPageController {
     @PostMapping("/editContact/{id}")
     public String editContactPage(
             @PathVariable("id") Integer id,
-            @Valid ContactModel contact,
+            @Valid @ModelAttribute("contact") ContactModel contact,
             BindingResult bindingResult,
             Model model) {
 
@@ -79,8 +88,6 @@ public class IndexPageController {
         if (!bindingResult.hasErrors()) {
             ContactModel contactModel = contactService.save(contact);
             model.addAttribute("contact", contactModel);
-        } else {
-            model.addAttribute("contact", contact);
         }
 
         model.addAttribute("newEmail", new ContactModel.Email());
@@ -115,7 +122,9 @@ public class IndexPageController {
                            RedirectAttributes redirectAttributes, HttpSession httpSession) {
 
         if (result.hasErrors()) {
-            redirectAttributes.addAttribute("newEmail", email);
+            redirectAttributes.addFlashAttribute("newEmail", email);
+            //redirectAttributes.addAttribute("newEmail", email); //-- use url argument to pass object across endpoints; Look to EmailFormatter
+
             httpSession.setAttribute("binding", result);
         } else {
             contactService.addNewEmail(contactId, email);

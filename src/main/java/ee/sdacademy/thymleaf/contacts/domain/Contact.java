@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
@@ -38,9 +39,7 @@ public class Contact {
     @Enumerated(EnumType.STRING)
     private ContactStatus status;
     private String description;
-    @OneToMany(cascade={CascadeType.ALL},
-            fetch= FetchType.LAZY,
-            mappedBy="contact", targetEntity=Email.class)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "contact")
     private List<Email> emails = new ArrayList<>();
 
 

@@ -47,12 +47,13 @@
             <td>Email</td>
             <td>Description</td>
             <td>
-                *
+                Delete
             </td>
         </tr>
         </thead>
         <tbody id="emailsRows">
         <tr th:each="email, row: *{emails}">
+
             <td>
                 <input type="hidden" th:field="*{emails[__${row.index}__].id}"/>
                 <select th:field="*{emails[__${row.index}__].type}">
@@ -71,7 +72,7 @@
               </textarea>
             </td>
             <td>
-                <button type="button" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                <input type="checkbox" th:field="*{emails[__${row.index}__].delete}">
             </td>
         </tr>
         </tbody>
